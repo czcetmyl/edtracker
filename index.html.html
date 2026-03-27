@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrackEd by Teacher Mel</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0a1628;color:#fff;line-height:1.6;}
+a{text-decoration:none;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:#0a1628;border-bottom:1px solid rgba(255,255,255,0.07);}
+.nav-logo{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.nav-logo span{color:#38bdf8;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{color:rgba(255,255,255,0.7);font-size:14px;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:#fff;}
+.nav-cta{background:#38bdf8;color:#0a1628!important;padding:8px 20px;border-radius:8px;font-weight:700!important;font-size:14px!important;}
+.nav-cta:hover{background:#7dd3fc!important;}
+
+/* HERO */
+.hero{text-align:center;padding:90px 24px 70px;max-width:820px;margin:0 auto;}
+.hero-badge{display:inline-block;background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:24px;text-transform:uppercase;}
+.hero h1{font-size:52px;font-weight:800;line-height:1.15;letter-spacing:-1.5px;margin-bottom:20px;}
+.hero h1 span{color:#38bdf8;}
+.hero p{font-size:18px;color:rgba(255,255,255,0.65);max-width:580px;margin:0 auto 36px;line-height:1.7;}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:#38bdf8;color:#0a1628;padding:14px 32px;border-radius:10px;font-weight:800;font-size:15px;border:none;cursor:pointer;transition:background 0.2s;}
+.btn-primary:hover{background:#7dd3fc;}
+.btn-secondary{background:rgba(255,255,255,0.08);color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;border:1px solid rgba(255,255,255,0.15);cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{background:rgba(255,255,255,0.14);}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:48px;padding:40px 24px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);}
+.stat{text-align:center;}
+.stat-num{font-size:32px;font-weight:800;color:#38bdf8;}
+.stat-label{font-size:13px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+/* FEATURES */
+.features{padding:80px 24px;max-width:1100px;margin:0 auto;}
+.section-label{text-align:center;font-size:12px;font-weight:700;letter-spacing:2px;color:#38bdf8;text-transform:uppercase;margin-bottom:12px;}
+.section-title{text-align:center;font-size:36px;font-weight:800;letter-spacing:-0.5px;margin-bottom:48px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.feature-card{background:#111d35;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;}
+.feature-icon{font-size:28px;margin-bottom:14px;}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+.feature-card p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;}
+
+/* LEVELS */
+.levels{padding:0 24px 80px;max-width:1100px;margin:0 auto;}
+.levels-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.level-pill{background:#111d35;border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:14px 24px;text-align:center;min-width:120px;}
+.level-pill .lvl{font-size:22px;font-weight:800;color:#38bdf8;}
+.level-pill .lvl-name{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+/* SCORE */
+.score-section{background:#111d35;border-top:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);padding:70px 24px;}
+.score-inner{max-width:900px;margin:0 auto;}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:40px;}
+.score-item{border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;}
+.score-range{font-size:18px;font-weight:800;min-width:60px;}
+.score-desc{font-size:13px;font-weight:600;}
+.score-zh{font-size:11px;opacity:0.7;}
+.s1{background:#fee2e2;}.s1 .score-range,.s1 .score-desc,.s1 .score-zh{color:#991b1b;}
+.s2{background:#fef3c7;}.s2 .score-range,.s2 .score-desc,.s2 .score-zh{color:#92400e;}
+.s3{background:#fef9c3;}.s3 .score-range,.s3 .score-desc,.s3 .score-zh{color:#854d0e;}
+.s4{background:#dcfce7;}.s4 .score-range,.s4 .score-desc,.s4 .score-zh{color:#166534;}
+.s5{background:#d1fae5;}.s5 .score-range,.s5 .score-desc,.s5 .score-zh{color:#065f46;}
+.s6{background:#bfdbfe;}.s6 .score-range,.s6 .score-desc,.s6 .score-zh{color:#1e3a8a;}
+
+/* TESTIMONIAL */
+.testimonial{padding:70px 24px;max-width:700px;margin:0 auto;text-align:center;}
+.quote{font-size:22px;font-style:italic;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:20px;}
+.quote-author{font-size:14px;color:#38bdf8;font-weight:700;}
+
+/* CTA */
+.cta-section{background:#111d35;border-top:1px solid rgba(255,255,255,0.07);padding:80px 24px;text-align:center;}
+.cta-section h2{font-size:36px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;}
+.cta-section p{font-size:16px;color:rgba(255,255,255,0.55);margin-bottom:32px;}
+.contact-form{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+.contact-form input,.contact-form textarea{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 16px;font-size:14px;color:#fff;font-family:inherit;outline:none;transition:border 0.2s;}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:rgba(255,255,255,0.35);}
+.contact-form input:focus,.contact-form textarea:focus{border-color:#38bdf8;}
+.contact-form textarea{min-height:90px;resize:vertical;}
+.submit-btn{background:#38bdf8;color:#0a1628;padding:13px;border-radius:10px;font-weight:800;font-size:15px;border:none;cursor:pointer;transition:background 0.2s;}
+.submit-btn:hover{background:#7dd3fc;}
+.success-msg{display:none;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:14px;color:#38bdf8;font-size:14px;font-weight:600;}
+
+/* FOOTER */
+footer{padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-top:1px solid rgba(255,255,255,0.07);}
+footer p{font-size:13px;color:rgba(255,255,255,0.4);}
+footer a{font-size:13px;color:#38bdf8;font-weight:600;}
+
+@media(max-width:600px){
+  nav{padding:14px 20px;}
+  .hero h1{font-size:34px;}
+  .stats{gap:28px;}
+  footer{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Track<span>Ed</span> <span style="font-size:13px;font-weight:400;color:rgba(255,255,255,0.4);">by Teacher Mel</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#levels">Levels</a>
+    <a href="#contact">Contact</a>
+    <a href="#contact" class="nav-cta">Request Access</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">For ESL Teachers</div>
+  <h1>Track student progress<br>the <span>smart way.</span></h1>
+  <p>A CEFR-based weekly improvement tracker built by a teacher, for teachers. Show parents real data — not just words.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Request Access</button>
+    <button class="btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See Features</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">CEFR levels covered</div></div>
+  <div class="stat"><div class="stat-num">10</div><div class="stat-label">weeks of tracking</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">cloud saved</div></div>
+  <div class="stat"><div class="stat-num">EN + 中文</div><div class="stat-label">bilingual labels</div></div>
+</div>
+
+<div class="features" id="features">
+  <div class="section-label">Features</div>
+  <div class="section-title">Everything a teacher needs.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">☁️</div>
+      <h3>Cloud Save — Anywhere Access</h3>
+      <p>All scores, notes, and progress auto-save to the cloud. Open on any device — laptop, tablet, or phone — and everything is there.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>Secure Teacher Login</h3>
+      <p>Every teacher has their own private account. Your students and data are 100% yours — nobody else can see them.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Week-by-Week Progress</h3>
+      <p>Track each student across 10 weeks. Parents can clearly see growth — Week 1 vs Week 8 — no guesswork needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Skill-Based Scoring (75–100)</h3>
+      <p>Color-coded scores from 75 to 100 with automatic labels — from "No knowledge yet" to "Fully mastered." Instantly readable by parents.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🇨🇳</div>
+      <h3>Bilingual — EN + 中文</h3>
+      <p>Every skill label and score description is in both English and Chinese. Perfect for Chinese ESL parents who want full transparency.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📝</div>
+      <h3>Teacher's Notes per Student</h3>
+      <p>Write personalized feedback and focus areas for every student each week. Parents receive specific, actionable insights — not generic comments.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✏️</div>
+      <h3>Fully Editable</h3>
+      <p>Add or remove students and skill areas anytime. Edit week labels to show actual dates. The tracker adapts to your teaching style.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🖨️</div>
+      <h3>Print to PDF — One Click</h3>
+      <p>Generate a clean, professional report for parents in seconds. Send via email or print — no extra formatting needed.</p>
+    </div>
+  </div>
+</div>
+
+<div class="levels" id="levels">
+  <div class="section-label" style="text-align:center;">CEFR Levels</div>
+  <div class="section-title" style="text-align:center;">All levels, one tracker.</div>
+  <div class="levels-grid">
+    <div class="level-pill"><div class="lvl">A1</div><div class="lvl-name">Beginner 初级</div></div>
+    <div class="level-pill"><div class="lvl">A2</div><div class="lvl-name">Elementary 基础</div></div>
+    <div class="level-pill"><div class="lvl">B1</div><div class="lvl-name">Intermediate 中级</div></div>
+    <div class="level-pill"><div class="lvl">B2</div><div class="lvl-name">Upper Inter. 中高级</div></div>
+    <div class="level-pill"><div class="lvl">C1</div><div class="lvl-name">Advanced 高级</div></div>
+    <div class="level-pill"><div class="lvl">C2</div><div class="lvl-name">Proficiency 精通</div></div>
+  </div>
+</div>
+
+<div class="score-section">
+  <div class="score-inner">
+    <div class="section-label" style="text-align:center;">Score System</div>
+    <div class="section-title" style="text-align:center;">Scores parents actually understand.</div>
+    <div class="score-grid">
+      <div class="score-item s1"><div class="score-range">75</div><div><div class="score-desc">No knowledge yet</div><div class="score-zh">尚未掌握</div></div></div>
+      <div class="score-item s2"><div class="score-range">76–80</div><div><div class="score-desc">Just starting to learn</div><div class="score-zh">刚开始学习</div></div></div>
+      <div class="score-item s3"><div class="score-range">81–85</div><div><div class="score-desc">Familiar but needs practice</div><div class="score-zh">有些熟悉但需练习</div></div></div>
+      <div class="score-item s4"><div class="score-range">86–90</div><div><div class="score-desc">Developing well</div><div class="score-zh">进步良好</div></div></div>
+      <div class="score-item s5"><div class="score-range">91–95</div><div><div class="score-desc">Almost mastered</div><div class="score-zh">接近掌握</div></div></div>
+      <div class="score-item s6"><div class="score-range">96–100</div><div><div class="score-desc">Fully mastered / Excellent</div><div class="score-zh">完全掌握／优秀</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="testimonial">
+  <div class="quote">"I stopped sending vague weekly updates and started sending actual data. Parents love it — and so do I."</div>
+  <div class="quote-author">— Teacher Mel, ESL Educator</div>
+</div>
+
+<div class="cta-section" id="contact">
+  <h2>Get Access Today!</h2>
+  <p>Choose your plan, pay via GCash, then send your screenshot to Teacher Mel on Messenger. Access will be set up within 24 hours! 🎉</p>
+
+  <div style="display:flex;justify-content:center;margin-bottom:40px;">
+    <div style="background:#111d35;border:2px solid #38bdf8;border-radius:16px;padding:36px 48px;text-align:center;max-width:360px;width:100%;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#38bdf8;text-transform:uppercase;margin-bottom:8px;">Lifetime Access</div>
+      <div style="font-size:52px;font-weight:800;color:#fff;margin-bottom:4px;">₱299</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:24px;">one-time payment only / isang beses lang bayad</div>
+      <ul style="list-style:none;text-align:left;font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:28px;display:flex;flex-direction:column;gap:10px;">
+        <li>✅ Lifetime access — bayad once, yours forever!</li>
+        <li>✅ Cloud save — access on any device</li>
+        <li>✅ All CEFR levels (A1 to C2)</li>
+        <li>✅ Unlimited students</li>
+        <li>✅ Editable skills & week labels</li>
+        <li>✅ Bilingual EN + 中文</li>
+        <li>✅ One-click PDF export</li>
+      </ul>
+      <a href="https://www.facebook.com/LaoshiMel" target="_blank" style="display:block;background:#38bdf8;color:#0a1628;padding:14px;border-radius:10px;font-weight:800;font-size:15px;">Get Access Now → ₱299 lang!</a>
+    </div>
+  </div>
+
+  <!-- GCash instructions -->
+  <div style="background:#111d35;border:1px solid rgba(56,189,248,0.2);border-radius:16px;padding:28px;max-width:500px;margin:0 auto;">
+    <div style="font-size:14px;font-weight:700;color:#38bdf8;margin-bottom:16px;text-align:center;">📱 How to Pay / 如何付款</div>
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:14px;color:rgba(255,255,255,0.8);">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#38bdf8;color:#0a1628;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">1</div>
+        <div>Send <strong style="color:#fff;">₱299</strong> via <strong style="color:#fff;">GCash</strong></div>
+      </div>
+      <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:12px 16px;text-align:center;">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:4px;">GCash Number</div>
+        <div style="font-size:22px;font-weight:800;color:#38bdf8;letter-spacing:1px;">0950 687 7353</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:4px;">Aira Mel Miranda</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#38bdf8;color:#0a1628;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">2</div>
+        <div>Screenshot your GCash receipt</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#38bdf8;color:#0a1628;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">3</div>
+        <div>Send screenshot + your email to <strong style="color:#fff;">Teacher Mel</strong> on Facebook Messenger</div>
+      </div>
+      <a href="https://www.facebook.com/LaoshiMel" target="_blank" style="display:block;background:#1877f2;color:#fff;padding:12px;border-radius:10px;font-weight:800;font-size:14px;text-align:center;margin-top:4px;">📘 Message Teacher Mel on Facebook →</a>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#38bdf8;color:#0a1628;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">4</div>
+        <div>Receive your login credentials within <strong style="color:#fff;">24 hours</strong> 🎉</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 TrackEd by Teacher Mel. All rights reserved.</p>
+  <a href="#contact">Get Access →</a>
+</footer>
+
+<script>
+function submitForm(){
+  const name=document.getElementById('cfName').value.trim();
+  const email=document.getElementById('cfEmail').value.trim();
+  const msg=document.getElementById('cfMsg').value.trim();
+  if(!name||!email){alert('Please fill in your name and email!');return;}
+  document.getElementById('successMsg').style.display='block';
+  document.getElementById('cfName').value='';
+  document.getElementById('cfEmail').value='';
+  document.getElementById('cfMsg').value='';
+}
+</script>
+</body>
+</html>
