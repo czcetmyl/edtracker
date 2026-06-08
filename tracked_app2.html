@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrackEd by Teacher Mel</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;background:#f0f4f8;color:#222;}
+@media print{.no-print{display:none!important;}body{background:white;}.card{box-shadow:none!important;border:1px solid #ccc!important;}}
+#authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a3a5c,#2d6a9f);}
+.auth-box{background:white;border-radius:16px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.auth-logo{text-align:center;margin-bottom:20px;}
+.auth-logo h1{font-size:22px;font-weight:800;color:#1a3a5c;margin-top:8px;}
+.auth-logo p{font-size:12px;color:#888;margin-top:4px;}
+.auth-field{margin-bottom:14px;}
+.auth-field label{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:5px;text-transform:uppercase;}
+.auth-field input{width:100%;border:1.5px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;font-family:inherit;}
+.auth-field input:focus{border-color:#1a3a5c;}
+.auth-btn{width:100%;background:#1a3a5c;color:white;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;}
+.auth-btn:disabled{background:#aaa;cursor:not-allowed;}
+.auth-msg{font-size:12px;margin-top:10px;padding:8px;border-radius:6px;text-align:center;}
+.auth-msg.error{background:#fee2e2;color:#991b1b;}
+.auth-note{text-align:center;font-size:11px;color:#aaa;margin-top:12px;}
+#appScreen{display:none;}
+.topbar{background:#1a3a5c;color:white;padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.topbar-brand{font-size:17px;font-weight:800;flex:1;min-width:160px;}
+.topbar-brand span{color:#38bdf8;}
+.badge{background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:11px;}
+.save-msg{font-size:11px;background:rgba(255,255,255,0.12);border-radius:20px;padding:4px 12px;color:#fff;min-width:130px;text-align:center;}
+.tbtn{padding:7px 14px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:700;}
+.tbtn-print{background:#e8a020;color:white;}
+.tbtn-gray{background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);}
+.tbtn-purple{background:#7c3aed;color:white;}
+.tbtn-red{background:#dc2626;color:white;}
+.level-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:12px 20px;background:#e8eef5;border-bottom:1px solid #d1d9e4;}
+.tab{padding:7px 20px;border-radius:20px;border:2px solid #1a3a5c;background:white;color:#1a3a5c;font-weight:700;cursor:pointer;font-size:13px;}
+.tab.active{background:#1a3a5c;color:white;}
+.content{padding:16px 20px;}
+.lsec{display:none;}.lsec.active{display:block;}
+.lhdr{background:linear-gradient(90deg,#1a3a5c,#2d6a9f);color:white;padding:12px 18px;border-radius:10px 10px 0 0;}
+.lhdr h2{font-size:15px;font-weight:700;}
+.lhdr p{font-size:12px;opacity:0.8;margin-top:2px;}
+.card{background:white;border:1px solid #dde3ec;border-radius:0 0 10px 10px;margin-bottom:28px;box-shadow:0 4px 12px rgba(0,0,0,0.06);}
+.legend{background:#f0f6ff;border:1px solid #bcd4f5;border-radius:8px;margin:12px 16px 4px;padding:10px 14px;}
+.legend-title{font-weight:700;font-size:12px;color:#1a3a5c;margin-bottom:8px;}
+.legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px;}
+.legend-item{font-size:11px;}
+.legend-tr{font-style:italic;color:#7c3aed;font-size:10px;display:none;margin-top:1px;}
+.srow{border-bottom:3px solid #e8eef5;}
+.shdr{padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-left:5px solid #ccc;}
+.savatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white;flex-shrink:0;}
+.sname{font-weight:700;font-size:14px;}
+.ssub{font-size:11px;color:#888;}
+.btn-rem{background:#fee2e2;color:#991b1b;padding:5px 12px;font-size:11px;border-radius:6px;border:1px solid #fca5a5;cursor:pointer;font-weight:700;margin-left:auto;}
+.confbox{display:none;background:#fff3f3;border:1px solid #e74c3c;border-radius:6px;padding:8px 14px;margin:6px 16px;font-size:12px;color:#c0392b;gap:10px;flex-wrap:wrap;align-items:center;}
+.confbox.on{display:flex;}
+.stbl{width:100%;border-collapse:collapse;table-layout:fixed;}
+.stbl th{background:#f8fafc;font-size:10px;font-weight:700;padding:7px 6px;text-align:center;border:1px solid #e5e7eb;color:#1a3a5c;}
+.stbl th.week-th{cursor:pointer;transition:background 0.15s;}
+.stbl th.week-th:hover{background:#dbeafe;}
+.stbl td{padding:6px 7px;border:1px solid #e5e7eb;vertical-align:middle;text-align:center;}
+.skill-name{font-weight:600;color:#1a3a5c;font-size:12px;display:block;text-align:left;}
+.skill-tr{font-style:italic;color:#7c3aed;font-size:10px;display:none;margin-top:2px;}
+.btn-delskill{display:inline-block;margin-top:3px;background:transparent;color:#e74c3c;border:1px solid #fca5a5;padding:2px 6px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:700;}
+.sc{width:58px;border:1.5px solid #bcd4f5;border-radius:6px;padding:5px 3px;font-size:13px;font-weight:700;text-align:center;background:white;color:#1a3a5c;display:block;margin:0 auto;}
+.sc:focus{outline:none;border-color:#1a3a5c;}
+.sc.r75{background:#fee2e2;color:#991b1b;border-color:#fca5a5;}
+.sc.r76{background:#fef3c7;color:#92400e;border-color:#fcd34d;}
+.sc.r81{background:#fef9c3;color:#854d0e;border-color:#fde047;}
+.sc.r86{background:#dcfce7;color:#166534;border-color:#86efac;}
+.sc.r91{background:#d1fae5;color:#065f46;border-color:#34d399;}
+.sc.r96{background:#bfdbfe;color:#1e3a8a;border-color:#60a5fa;}
+.notea{width:100%;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;padding:5px 7px;resize:vertical;min-height:32px;font-family:inherit;color:#333;}
+.notea:focus{outline:none;border-color:#1a3a5c;}
+.aibtn{font-size:9px;background:#f0f6ff;color:#1a3a5c;border:1px solid #bcd4f5;border-radius:4px;padding:2px 7px;cursor:pointer;font-weight:700;margin-top:3px;display:inline-block;}
+.aibtn:hover{background:#1a3a5c;color:white;}
+.aibtn:disabled{opacity:0.5;cursor:not-allowed;}
+.tnotes{background:#fffbeb;border-top:2px dashed #f59e0b;padding:12px 16px;}
+.tnotes-lbl{font-weight:700;font-size:12px;color:#92400e;margin-bottom:6px;}
+.tnotes-area{width:100%;border:1px solid #f59e0b;border-radius:8px;padding:8px;font-size:12px;min-height:52px;resize:vertical;font-family:inherit;background:white;}
+.fixbtn{font-size:10px;background:#f0f6ff;color:#1a3a5c;border:1px solid #bcd4f5;border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:700;}
+.fixbtn:disabled{opacity:0.5;cursor:not-allowed;}
+.trbox{margin-top:8px;background:#faf5ff;border:1px solid #ddd6fe;border-radius:8px;padding:10px 12px;font-size:12px;display:none;}
+.trbox.on{display:block;}
+.trlang{font-weight:700;font-size:10px;color:#7c3aed;margin-bottom:4px;}
+.feedback-section{background:#f0fdf4;border-top:2px solid #86efac;padding:12px 16px;}
+.feedback-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+.feedback-label{font-weight:700;font-size:12px;color:#166534;}
+.fbtn{padding:6px 14px;border-radius:6px;border:none;font-size:11px;cursor:pointer;font-weight:700;}
+.fbtn-gen{background:#059669;color:white;}
+.fbtn-gen:disabled{opacity:0.5;cursor:not-allowed;}
+.fbtn-compare{background:#2563eb;color:white;}
+.week-select{border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:11px;background:white;}
+.feedback-box{background:white;border:1px solid #86efac;border-radius:8px;padding:12px;font-size:12px;line-height:1.7;color:#333;min-height:60px;white-space:pre-wrap;}
+.feedback-box.empty{color:#aaa;font-style:italic;}
+.compare-box{margin-top:10px;display:none;}
+.compare-box.on{display:block;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+.compare-card{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:10px;}
+.compare-card h4{font-size:12px;font-weight:700;color:#1a3a5c;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;}
+.compare-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;border-bottom:1px solid #f5f5f5;}
+.compare-skill{color:#555;flex:1;}
+.compare-score{font-weight:700;min-width:40px;text-align:right;}
+.compare-diff{font-size:10px;min-width:50px;text-align:right;font-weight:700;}
+.diff-up{color:#059669;}.diff-down{color:#e74c3c;}.diff-same{color:#888;}
+.cardfooter{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid #e8eef5;background:#fafbfc;}
+.btn-addst{background:#059669;color:white;padding:7px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:700;}
+.btn-addsk{background:#2563eb;color:white;padding:7px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:700;}
+.btn-addweek{background:#7c3aed;color:white;padding:7px 16px;border-radius:7px;border:none;font-size:12px;cursor:pointer;font-weight:700;}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-bg.on{display:flex;}
+.modal{background:white;border-radius:14px;padding:28px;width:90%;max-width:420px;}
+.modal h3{font-size:16px;color:#1a3a5c;margin-bottom:18px;font-weight:700;}
+.mfield{margin-bottom:14px;}
+.mfield label{display:block;font-size:11px;font-weight:700;color:#555;margin-bottom:5px;text-transform:uppercase;}
+.mfield input,.mfield select{width:100%;border:1.5px solid #e5e7eb;border-radius:8px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;}
+.mfield input:focus,.mfield select:focus{border-color:#1a3a5c;}
+.mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a3a5c;color:white;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;display:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+.toast.on{display:block;}
+</style>
+</head>
+<body>
+
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div style="font-size:40px;">📚</div>
+      <h1>TrackEd</h1>
+      <p>by Teacher Mel · CEFR Student Tracker</p>
+    </div>
+    <div class="auth-field"><label>Email</label><input type="email" id="em" placeholder="teacher@example.com"></div>
+    <div class="auth-field"><label>Password</label><input type="password" id="pw" placeholder="Enter your password"></div>
+    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Login</button>
+    <div id="amsg"></div>
+    <p class="auth-note">Contact Teacher Mel to get access.</p>
+  </div>
+</div>
+
+<div class="modal-bg" id="trMod">
+  <div class="modal">
+    <h3>🌐 Translate Everything</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:16px;">Skill names, score labels, and teacher notes will be translated.</p>
+    <div class="mfield">
+      <label>Language</label>
+      <select id="langSel">
+        <option value="">— Choose —</option>
+        <optgroup label="🌏 Asia">
+          <option value="Chinese Simplified">🇨🇳 Chinese</option>
+          <option value="Korean">🇰🇷 Korean</option>
+          <option value="Japanese">🇯🇵 Japanese</option>
+          <option value="Vietnamese">🇻🇳 Vietnamese</option>
+          <option value="Thai">🇹🇭 Thai</option>
+          <option value="Indonesian">🇮🇩 Indonesian</option>
+          <option value="Filipino">🇵🇭 Filipino</option>
+        </optgroup>
+        <optgroup label="🌍 Middle East">
+          <option value="Arabic">🇸🇦 Arabic</option>
+          <option value="Hebrew">🇮🇱 Hebrew</option>
+          <option value="Turkish">🇹🇷 Turkish</option>
+        </optgroup>
+        <optgroup label="🌎 Europe">
+          <option value="Spanish">🇪🇸 Spanish</option>
+          <option value="French">🇫🇷 French</option>
+          <option value="German">🇩🇪 German</option>
+          <option value="Portuguese">🇵🇹 Portuguese</option>
+          <option value="Italian">🇮🇹 Italian</option>
+          <option value="Russian">🇷🇺 Russian</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="mactions">
+      <button class="tbtn" style="background:#e5e7eb;color:#333;" onclick="closeTrMod()">Cancel</button>
+      <button class="tbtn tbtn-purple" id="doTrBtn" onclick="runTranslate()">🌐 Translate All</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="changePwMod">
+  <div class="modal">
+    <h3>🔒 Change Password</h3>
+    <div class="mfield"><label>New Password</label><input type="password" id="newPw1" placeholder="Min. 6 characters"></div>
+    <div class="mfield"><label>Confirm Password</label><input type="password" id="newPw2" placeholder="Re-enter password"></div>
+    <div id="pwMsg" style="font-size:12px;margin-top:8px;padding:6px 8px;border-radius:6px;display:none;"></div>
+    <div class="mactions">
+      <button class="tbtn" style="background:#e5e7eb;color:#333;" onclick="closeChangePw()">Cancel</button>
+      <button class="tbtn" style="background:#1a3a5c;color:white;" id="changePwBtn" onclick="doChangePw()">Save Password</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="adminKeyMod">
+  <div class="modal">
+    <h3>🔑 Update AI API Key</h3>
+    <p style="font-size:12px;color:#888;margin-bottom:16px;">Stored securely in the database. Only visible to you.</p>
+    <div class="mfield"><label>Groq API Key</label><input type="password" id="newApiKey" placeholder="gsk_..."></div>
+    <div id="keyMsg" style="font-size:12px;margin-top:8px;padding:6px 8px;border-radius:6px;display:none;"></div>
+    <div class="mactions">
+      <button class="tbtn" style="background:#e5e7eb;color:#333;" onclick="closeAdminKey()">Cancel</button>
+      <button class="tbtn tbtn-red" id="saveKeyBtn" onclick="saveApiKey()">💾 Save Key</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="appScreen">
+  <div class="topbar no-print">
+    <div class="topbar-brand">Track<span>Ed</span> <span style="font-size:11px;font-weight:400;opacity:0.6;">by Teacher Mel</span></div>
+    <span class="badge" id="tname">👩‍🏫 Teacher</span>
+    <span class="save-msg" id="smsg">☁️ Cloud Save ON</span>
+    <button class="tbtn tbtn-gray" onclick="openChangePw()">🔒 Password</button>
+    <button class="tbtn tbtn-purple" onclick="document.getElementById('trMod').classList.add('on')">🌐 Translate</button>
+    <button class="tbtn tbtn-print" onclick="window.print()">🖨️ PDF</button>
+    <span id="adminKeyBtn" style="display:none;"><button class="tbtn tbtn-red" onclick="openAdminKey()">🔑 API Key</button></span>
+    <button class="tbtn tbtn-gray" onclick="doLogout()">Logout</button>
+  </div>
+  <div class="level-tabs no-print">
+    <button class="tab active" onclick="showLvl('A1',this)">A1</button>
+    <button class="tab" onclick="showLvl('A2',this)">A2</button>
+    <button class="tab" onclick="showLvl('B1',this)">B1</button>
+    <button class="tab" onclick="showLvl('B2',this)">B2</button>
+    <button class="tab" onclick="showLvl('C1',this)">C1</button>
+    <button class="tab" onclick="showLvl('C2',this)">C2</button>
+  </div>
+  <div class="content" id="mc"></div>
+</div>
+
+<script>
+const SB_URL='https://qpwkstxrugcqckuweopc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwd2tzdHhydWdjcWNrdXdlb3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDI0ODAsImV4cCI6MjA5MDA3ODQ4MH0.ehbp-oa9WzeTq_wSE9wSo8MLZ32WA_Y2ut5KRjDgVWE';
+const AI_URL='https://api.groq.com/openai/v1/chat/completions';
+const ADMIN_EMAIL='mirandaairamel@gmail.com';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+const PALETTE=['#1a3a5c','#0f6e56','#7c3aed','#b45309','#0369a1','#9f1239','#1d4ed8','#166534','#6d28d9','#92400e','#0e7490','#be185d'];
+const col=i=>PALETTE[i%PALETTE.length];
+const ini=n=>{const w=n.trim().split(/\s+/);return(w.length>=2?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase();};
+
+const DEF={
+  A1:{label:'A1 — Beginner',sub:'Beginner Level',skills:['Reading Skills','Pronunciation','Vocabulary','Listening Comprehension','Speaking Confidence','Letter & Word Recognition','Participation & Engagement'],students:[]},
+  A2:{label:'A2 — Elementary',sub:'Elementary Level',skills:['Reading Skills','Pronunciation','Vocabulary Usage','Listening Comprehension','Speaking Fluency','Basic Writing','Grammar Awareness','Participation & Engagement'],students:[]},
+  B1:{label:'B1 — Intermediate',sub:'Intermediate Level',skills:['Reading Comprehension','Pronunciation & Intonation','Vocabulary Range','Listening Comprehension','Speaking Fluency','Writing Ability','Grammar Accuracy','Self-Expression','Participation & Engagement'],students:[]},
+  B2:{label:'B2 — Upper Intermediate',sub:'Upper Intermediate Level',skills:['Reading Comprehension','Pronunciation & Intonation','Vocabulary & Idioms','Listening Comprehension','Speaking Fluency','Writing Quality','Grammar Accuracy','Critical Thinking','Communication Strategy','Participation & Engagement'],students:[]},
+  C1:{label:'C1 — Advanced',sub:'Advanced Level',skills:['Reading & Analysis','Pronunciation & Fluency','Advanced Vocabulary','Listening & Inference','Speaking Precision','Academic Writing','Grammar Mastery','Critical Thinking','Presentation Skills','Participation & Engagement'],students:[]},
+  C2:{label:'C2 — Proficiency',sub:'Proficiency Level',skills:['Reading & Nuance','Pronunciation & Natural Speech','Idiomatic Vocabulary','Listening & Context','Speaking Sophistication','Advanced Writing','Grammar & Style','Analytical Thinking','Presentation & Debate','Overall Mastery'],students:[]}
+};
+
+const SCORES=[
+  {min:75,max:75,rc:'r75',en:'No knowledge yet'},
+  {min:76,max:80,rc:'r76',en:'Just starting to learn'},
+  {min:81,max:85,rc:'r81',en:'Familiar but needs practice'},
+  {min:86,max:90,rc:'r86',en:'Developing well'},
+  {min:91,max:95,rc:'r91',en:'Almost mastered'},
+  {min:96,max:100,rc:'r96',en:'Fully mastered / Excellent'},
+];
+
+let D={};
+let user=null;
+let WEEKS=Array.from({length:10},(_,i)=>`Week ${i+1}`);
+let saveT;
+let AI_KEY='';
+
+function initD(){
+  D={};
+  Object.keys(DEF).forEach(l=>D[l]={label:DEF[l].label,sub:DEF[l].sub,skills:[...DEF[l].skills],students:[]});
+}
+
+// ── AI KEY ──
+async function loadApiKey(){
+  try{const {data}=await sb.from('tracker_data').select('value').eq('id','__groq_api_key__').single();if(data?.value)AI_KEY=data.value;}catch(e){}
+}
+function openAdminKey(){document.getElementById('newApiKey').value='';document.getElementById('keyMsg').style.display='none';document.getElementById('adminKeyMod').classList.add('on');}
+function closeAdminKey(){document.getElementById('adminKeyMod').classList.remove('on');}
+async function saveApiKey(){
+  const key=document.getElementById('newApiKey').value.trim();
+  if(!key){showKeyMsg('Please enter a key.','#fee2e2','#991b1b');return;}
+  const btn=document.getElementById('saveKeyBtn');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    await sb.from('tracker_data').upsert({id:'__groq_api_key__',user_id:user.id,value:key,updated_at:new Date().toISOString()},{onConflict:'id'});
+    AI_KEY=key;showKeyMsg('✅ Saved!','#dcfce7','#166534');setTimeout(()=>closeAdminKey(),1500);showToast('✅ AI Key updated!');
+  }catch(e){showKeyMsg('❌ Error.','#fee2e2','#991b1b');}
+  btn.disabled=false;btn.textContent='💾 Save Key';
+}
+function showKeyMsg(txt,bg,c){const el=document.getElementById('keyMsg');el.textContent=txt;el.style.background=bg;el.style.color=c;el.style.display='block';}
+
+// ── AI ──
+async function aiCall(prompt){
+  if(!AI_KEY){showToast('⚠️ AI unavailable');return'';}
+  try{
+    const r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},
+      body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:prompt}],max_tokens:1000,temperature:0.4})});
+    const d=await r.json();
+    return d.choices?.[0]?.message?.content?.trim()||'';
+  }catch(e){return'';}
+}
+
+function showToast(msg,dur=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),dur);}
+
+// ── SCORE ──
+function getRange(v){const n=parseInt(v);if(isNaN(n))return null;return SCORES.find(r=>n>=r.min&&n<=r.max)||null;}
+
+function styleScore(inp){
+  const v=parseInt(inp.value);
+  if(!inp.value.trim()){inp.className='sc';return;}
+  const r=getRange(v);
+  inp.className='sc'+(r?' '+r.rc:'');
+}
+
+function onScore(inp){
+  // Only color — no correction while typing
+  styleScore(inp);
+  qSave();
+}
+
+function onScoreBlur(inp){
+  // Correct range only when done typing
+  if(!inp.value.trim())return;
+  let v=parseInt(inp.value);
+  if(v<75)inp.value=75;
+  if(v>100)inp.value=100;
+  styleScore(inp);
+  qSave();
+}
+
+function mkScore(id){
+  return`<input class="sc" type="number" placeholder="—" data-save="${id}" oninput="onScore(this)" onblur="onScoreBlur(this)">`;
+}
+
+// ── GRAMMAR FIX ──
+async function fixGrammar(btn){
+  const ta=btn.previousElementSibling;
+  if(!ta?.value?.trim()){alert('Write something first!');return;}
+  btn.disabled=true;btn.textContent='⏳...';
+  const r=await aiCall(`Fix grammar and make professional. Return ONLY corrected text:\n\n"${ta.value.trim()}"`);
+  if(r){ta.value=r;qSave();showToast('✅ Grammar fixed!');}else showToast('⚠️ AI unavailable');
+  btn.disabled=false;btn.textContent='✨ Fix Grammar';
+}
+async function fixNoteGrammar(btn,nid){
+  const ta=document.querySelector(`[data-save="${nid}"]`);
+  if(!ta?.value?.trim()){alert('Write notes first!');return;}
+  btn.disabled=true;btn.textContent='⏳...';
+  const r=await aiCall(`Fix grammar and make professional. Return ONLY corrected text:\n\n"${ta.value.trim()}"`);
+  if(r){ta.value=r;qSave();showToast('✅ Grammar fixed!');}else showToast('⚠️ AI unavailable');
+  btn.disabled=false;btn.textContent='✨ Fix Grammar';
+}
+
+// ── FEEDBACK ──
+async function generateFeedback(btn,lvl,idx){
+  const wi=parseInt(document.getElementById(`fb-week-${lvl}-${idx}`).value);
+  const skills=D[lvl].skills;
+  const studentName=document.querySelector(`#srow-${lvl}-${idx} .sname`)?.textContent||'Student';
+  const teacherNotes=document.querySelector(`[data-save="tn__${lvl}__${idx}"]`)?.value||'';
+  let scoreLines=[];
+  skills.forEach((s,si)=>{
+    const inp=document.querySelector(`[data-save="${lvl}__${idx}__w${wi+1}__${si}"]`);
+    const comment=document.querySelector(`[data-save="note__${lvl}__${idx}__${si}"]`)?.value||'';
+    const score=inp?.value||'—';
+    const range=score!=='—'?SCORES.find(r=>parseInt(score)>=r.min&&parseInt(score)<=r.max):null;
+    scoreLines.push(`- ${s}: ${score}${range?' ('+range.en+')':''} ${comment?'| Comment: '+comment:''}`);
+  });
+  const prompt=`You are a professional ESL teacher writing a weekly progress report for parents.\n\nStudent: ${studentName}\nLevel: ${lvl}\nWeek: ${WEEKS[wi]}\n\nScores:\n${scoreLines.join('\n')}\n\nTeacher notes: ${teacherNotes||'None'}\n\nWrite a warm, professional 3-4 sentence feedback for parents. Highlight strengths and areas for improvement. Paragraph form only, no bullet points.`;
+  btn.disabled=true;btn.textContent='⏳ Generating...';
+  const r=await aiCall(prompt);
+  const box=document.getElementById(`fb-box-${lvl}-${idx}`);
+  if(r){
+    box.textContent=r;box.classList.remove('empty');
+    const fields={};document.querySelectorAll('[data-save]').forEach(el=>fields[el.dataset.save]=el.value);
+    fields[`feedback__${lvl}__${idx}__w${wi+1}`]=r;
+    await dbSet('__fields__',JSON.stringify(fields));
+    showToast('✅ Feedback generated!');
+  }else{box.textContent='⚠️ AI unavailable.';showToast('⚠️ AI unavailable');}
+  btn.disabled=false;btn.textContent='✨ Generate Feedback';
+}
+
+// ── COMPARE ──
+function compareWeeks(lvl,idx){
+  const w1=parseInt(document.getElementById(`cmp-w1-${lvl}-${idx}`).value);
+  const w2=parseInt(document.getElementById(`cmp-w2-${lvl}-${idx}`).value);
+  if(w1===w2){alert('Please select two different weeks!');return;}
+  const skills=D[lvl].skills;
+  const box=document.getElementById(`cmp-box-${lvl}-${idx}`);
+  let rows1='',rows2='',hasData=false;
+  skills.forEach((s,si)=>{
+    const v1=parseInt(document.querySelector(`[data-save="${lvl}__${idx}__w${w1+1}__${si}"]`)?.value)||0;
+    const v2=parseInt(document.querySelector(`[data-save="${lvl}__${idx}__w${w2+1}__${si}"]`)?.value)||0;
+    if(v1||v2)hasData=true;
+    const diff=v2-v1;
+    const dh=diff>0?`<span class="compare-diff diff-up">▲ +${diff}</span>`:diff<0?`<span class="compare-diff diff-down">▼ ${diff}</span>`:`<span class="compare-diff diff-same">= same</span>`;
+    rows1+=`<div class="compare-row"><span class="compare-skill">${s}</span><span class="compare-score" style="color:${v1?'#1a3a5c':'#ccc'}">${v1||'—'}</span></div>`;
+    rows2+=`<div class="compare-row"><span class="compare-skill">${s}</span><span class="compare-score" style="color:${v2?'#1a3a5c':'#ccc'}">${v2||'—'}</span>${dh}</div>`;
+  });
+  if(!hasData){alert('No scores found for selected weeks.');return;}
+  box.innerHTML=`<div class="compare-grid"><div class="compare-card"><h4>📅 ${WEEKS[w1]}</h4>${rows1}</div><div class="compare-card"><h4>📅 ${WEEKS[w2]} <span style="font-size:10px;color:#7c3aed;">vs ${WEEKS[w1]}</span></h4>${rows2}</div></div>`;
+  box.classList.add('on');
+}
+
+// ── TRANSLATE ──
+function closeTrMod(){document.getElementById('trMod').classList.remove('on');}
+async function runTranslate(){
+  const lang=document.getElementById('langSel').value;
+  if(!lang){alert('Please select a language!');return;}
+  const btn=document.getElementById('doTrBtn');btn.disabled=true;btn.textContent='⏳ Translating...';
+  closeTrMod();showToast(`🌐 Translating to ${lang}...`,10000);
+  const lvl=document.querySelector('.lsec.active')?.id?.replace('sec-','');
+  for(const s of SCORES){
+    const r=await aiCall(`Translate to ${lang}. Return ONLY translated text: "${s.en}"`);
+    if(r)document.querySelectorAll(`.legend-tr[data-k="${s.en}"]`).forEach(el=>{el.textContent=r;el.style.display='block';});
+  }
+  if(lvl){
+    for(let i=0;i<D[lvl].skills.length;i++){
+      const r=await aiCall(`Translate to ${lang}. Return ONLY translated text: "${D[lvl].skills[i]}"`);
+      if(r)document.querySelectorAll(`.skill-tr[data-l="${lvl}"][data-i="${i}"]`).forEach(el=>{el.textContent=r;el.style.display='block';});
+    }
+    document.querySelectorAll(`#sec-${lvl} .tnotes-area`).forEach(async ta=>{
+      if(!ta.value.trim())return;
+      const r=await aiCall(`Fix grammar then translate to ${lang}. Return ONLY translated text:\n\n"${ta.value.trim()}"`);
+      if(r){
+        const nid=ta.dataset.save;let box=document.getElementById(`trb-${nid}`);
+        if(!box){box=document.createElement('div');box.id=`trb-${nid}`;box.className='trbox';ta.after(box);}
+        box.innerHTML=`<div class="trlang">🌐 ${lang}</div><div>${r}</div>`;box.classList.add('on');
+      }
+    });
+  }
+  showToast(`✅ Translated to ${lang}!`);btn.disabled=false;btn.textContent='🌐 Translate All';
+}
+
+// ── CHANGE PW ──
+function openChangePw(){document.getElementById('newPw1').value='';document.getElementById('newPw2').value='';document.getElementById('pwMsg').style.display='none';document.getElementById('changePwMod').classList.add('on');}
+function closeChangePw(){document.getElementById('changePwMod').classList.remove('on');}
+async function doChangePw(){
+  const pw1=document.getElementById('newPw1').value,pw2=document.getElementById('newPw2').value;
+  const btn=document.getElementById('changePwBtn');
+  if(!pw1||!pw2){showPwMsg('Please fill in both fields.','#fee2e2','#991b1b');return;}
+  if(pw1.length<6){showPwMsg('Minimum 6 characters.','#fee2e2','#991b1b');return;}
+  if(pw1!==pw2){showPwMsg('Passwords do not match!','#fee2e2','#991b1b');return;}
+  btn.disabled=true;btn.textContent='Saving...';
+  const {error}=await sb.auth.updateUser({password:pw1});
+  btn.disabled=false;btn.textContent='Save Password';
+  if(error)showPwMsg('❌ '+error.message,'#fee2e2','#991b1b');
+  else{showPwMsg('✅ Password changed!','#dcfce7','#166534');setTimeout(()=>closeChangePw(),2000);}
+}
+function showPwMsg(txt,bg,c){const el=document.getElementById('pwMsg');el.textContent=txt;el.style.background=bg;el.style.color=c;el.style.display='block';}
+
+// ── AUTH ──
+async function doLogin(){
+  const email=document.getElementById('em').value.trim(),pass=document.getElementById('pw').value;
+  if(!email||!pass){setAmsg('Please fill in all fields.','error');return;}
+  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='Logging in...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Login';
+  if(error){setAmsg('❌ '+error.message,'error');return;}
+  startApp(data.user);
+}
+function setAmsg(msg,type){document.getElementById('amsg').innerHTML=`<div class="auth-msg ${type}">${msg}</div>`;}
+async function doLogout(){await sb.auth.signOut();user=null;AI_KEY='';document.getElementById('appScreen').style.display='none';document.getElementById('authScreen').style.display='flex';initD();}
+function startApp(u){
+  user=u;
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('tname').textContent='👩‍🏫 '+(u.user_metadata?.name||u.email);
+  if(u.email===ADMIN_EMAIL)document.getElementById('adminKeyBtn').style.display='inline';
+  loadAll();
+}
+
+// ── DB ──
+async function dbAll(){try{const {data}=await sb.from('tracker_data').select('id,value').eq('user_id',user.id);return data||[];}catch(e){return[];}}
+async function dbSet(id,val){try{const uid=user.id+'__'+id;await sb.from('tracker_data').upsert({id:uid,user_id:user.id,value:val,updated_at:new Date().toISOString()},{onConflict:'id'});return true;}catch(e){return false;}}
+
+// ── SAVE/LOAD ──
+function qSave(){clearTimeout(saveT);saveT=setTimeout(saveAll,800);}
+function setSMsg(t,bg,c){const m=document.getElementById('smsg');m.textContent=t;m.style.background=bg;m.style.color=c;}
+
+async function saveAll(){
+  setSMsg('💾 Saving...','#fef3c7','#92400e');
+  const fields={};document.querySelectorAll('[data-save]').forEach(el=>fields[el.dataset.save]=el.value);
+  const students={};Object.keys(D).forEach(l=>students[l]=D[l].students);
+  const skills={};Object.keys(D).forEach(l=>skills[l]=D[l].skills);
+  const ok=await Promise.all([dbSet('__fields__',JSON.stringify(fields)),dbSet('__students__',JSON.stringify(students)),dbSet('__weeks__',JSON.stringify(WEEKS)),dbSet('__skills__',JSON.stringify(skills))]);
+  if(ok.every(Boolean)){setSMsg('✅ Saved!','rgba(255,255,255,0.15)','#cfe');setTimeout(()=>setSMsg('☁️ Cloud Save ON','rgba(255,255,255,0.15)','#fff'),1800);}
+  else setSMsg('⚠️ Error saving','#fee2e2','#991b1b');
+}
+
+async function loadAll(){
+  setSMsg('⏳ Loading...','rgba(255,255,255,0.15)','#fff');
+  initD();await loadApiKey();
+  const rows=await dbAll();
+  const pfx=user.id+'__';const find=key=>rows.find(r=>r.id===pfx+key);
+  const wr=find('__weeks__');
+  if(wr){try{const p=JSON.parse(wr.value);if(Array.isArray(p)&&p.length>0)WEEKS=[...p];}catch(e){}}
+  const sr=find('__skills__');
+  if(sr){try{const sk=JSON.parse(sr.value);Object.keys(sk).forEach(l=>{if(!D[l])return;const arr=sk[l];if(Array.isArray(arr))D[l].skills=arr.map(s=>{if(typeof s==='string'&&s.trim()&&s!=='undefined')return s.trim();if(s&&typeof s==='object'){const v=s.en||s.zh||Object.values(s).find(x=>x&&typeof x==='string'&&x!=='undefined');return v?String(v).trim():null;}return null;}).filter(Boolean);});}catch(e){}}
+  const lr=find('__students__');
+  if(lr){try{const ls=JSON.parse(lr.value);Object.keys(ls).forEach(l=>{if(D[l]&&Array.isArray(ls[l]))D[l].students=ls[l];});}catch(e){}}
+  render();
+  const fr=find('__fields__');
+  if(fr){try{
+    const fd=JSON.parse(fr.value);
+    Object.entries(fd).forEach(([k,v])=>{
+      const el=document.querySelector(`[data-save="${k}"]`);
+      if(el){el.value=v;if(el.classList.contains('sc'))styleScore(el);}
+      if(k.startsWith('feedback__')){
+        const parts=k.split('__');const lvl=parts[1],idx=parts[2];
+        const box=document.getElementById(`fb-box-${lvl}-${idx}`);
+        if(box&&v){box.textContent=v;box.classList.remove('empty');}
+      }
+    });
+  }catch(e){}}
+  setSMsg('☁️ Cloud Save ON','rgba(255,255,255,0.15)','#fff');
+}
+
+async function restoreF(){
+  const rows=await dbAll();const pfx=user.id+'__';
+  const fr=rows.find(r=>r.id===pfx+'__fields__');
+  if(fr){try{const fd=JSON.parse(fr.value);Object.entries(fd).forEach(([k,v])=>{const el=document.querySelector(`[data-save="${k}"]`);if(el){el.value=v;if(el.classList.contains('sc'))styleScore(el);}});}catch(e){}}
+}
+
+// ── WEEKS ──
+function editWeek(wi){
+  const v=window.prompt(`Rename "${WEEKS[wi]}":`,WEEKS[wi]);
+  if(!v?.trim())return;
+  WEEKS[wi]=v.trim();
+  document.querySelectorAll(`.wth-${wi}`).forEach(el=>el.innerHTML=`${WEEKS[wi]} <span style="font-size:9px;opacity:0.6;">✏️</span>`);
+  saveAll();
+}
+function addMoreWeeks(){
+  const next=WEEKS.length+1;
+  WEEKS=[...WEEKS,...Array.from({length:10},(_,i)=>`Week ${next+i}`)];
+  const al=document.querySelector('.lsec.active')?.id?.replace('sec-','');
+  render();if(al)showLvl(al,document.querySelector('.tab.active'));
+  restoreF();saveAll();
+  showToast(`✅ Added Weeks ${next}–${next+9}!`);
+}
+
+// ── SKILLS ──
+function addSkill(lvl){
+  const name=window.prompt('Enter skill name:');if(!name?.trim())return;
+  D[lvl].skills.push(name.trim());
+  const al=document.querySelector('.lsec.active')?.id?.replace('sec-','');
+  render();if(al)showLvl(al,document.querySelector('.tab.active'));
+  restoreF();saveAll();
+}
+function removeSkill(lvl,si){
+  if(!confirm(`Remove "${D[lvl].skills[si]}"?`))return;
+  D[lvl].skills.splice(si,1);
+  const al=document.querySelector('.lsec.active')?.id?.replace('sec-','');
+  render();if(al)showLvl(al,document.querySelector('.tab.active'));
+  restoreF();saveAll();
+}
+
+// ── STUDENTS ──
+function addStudent(lvl){
+  const name=window.prompt(`Student name for ${lvl}:`);if(!name?.trim())return;
+  D[lvl].students.push(name.trim());
+  document.getElementById(`emp-${lvl}`)?.remove();
+  const idx='x'+Date.now();const ci=D[lvl].students.length-1;
+  const div=document.createElement('div');
+  div.innerHTML=buildStudent(lvl,name.trim(),idx,ci);
+  document.getElementById(`stu-${lvl}`).appendChild(div.firstElementChild);
+  updCount(lvl);saveAll();
+}
+function showConfirm(lvl,idx){document.getElementById(`conf-${lvl}-${idx}`).classList.add('on');}
+function hideConfirm(lvl,idx){document.getElementById(`conf-${lvl}-${idx}`).classList.remove('on');}
+function removeStudent(lvl,idx){
+  const row=document.getElementById(`srow-${lvl}-${idx}`);
+  const nameEl=row?.querySelector('.sname');
+  if(nameEl){const pos=D[lvl].students.indexOf(nameEl.textContent);if(pos>-1)D[lvl].students.splice(pos,1);}
+  if(row)row.remove();
+  if(D[lvl].students.length===0){const cont=document.getElementById(`stu-${lvl}`);if(cont)cont.innerHTML=`<div id="emp-${lvl}" style="padding:24px;color:#888;text-align:center;">No students yet. Click "+ Add Student" below.</div>`;}
+  updCount(lvl);saveAll();
+}
+function updCount(lvl){const el=document.querySelector(`#sec-${lvl} .lhdr p`);if(el)el.textContent=`${D[lvl].sub} · ${D[lvl].students.length} student(s) · ${WEEKS.length} weeks`;}
+
+// ── BUILD ──
+function buildStudent(lvl,name,idx,ci){
+  const skills=D[lvl].skills,c=col(ci),nid=`tn__${lvl}__${idx}`;
+  const weekOpts=WEEKS.map((w,i)=>`<option value="${i}">${w}</option>`).join('');
+  const rows=skills.map((s,si)=>`
+    <tr>
+      <td style="text-align:left;width:14%;">
+        <span class="skill-name">${s}</span>
+        <span class="skill-tr no-print" data-l="${lvl}" data-i="${si}"></span>
+        <button class="btn-delskill no-print" onclick="removeSkill('${lvl}',${si})">✕</button>
+      </td>
+      ${WEEKS.map((_,wi)=>`<td>${mkScore(`${lvl}__${idx}__w${wi+1}__${si}`)}</td>`).join('')}
+      <td style="text-align:left;width:13%;">
+        <textarea class="notea" data-save="note__${lvl}__${idx}__${si}" oninput="qSave()" placeholder="Observation..."></textarea>
+        <button class="aibtn no-print" onclick="fixGrammar(this)">✨ Fix Grammar</button>
+      </td>
+    </tr>`).join('');
+
+  return`
+  <div class="srow" id="srow-${lvl}-${idx}">
+    <div class="shdr" style="border-left-color:${c};background:${c}10;">
+      <div class="savatar" style="background:${c};">${ini(name)}</div>
+      <div><div class="sname" style="color:${c};">${name}</div><div class="ssub">Student</div></div>
+      <button class="btn-rem no-print" onclick="showConfirm('${lvl}','${idx}')">✕ Remove</button>
+    </div>
+    <div class="confbox no-print" id="conf-${lvl}-${idx}">
+      <span>Remove <b>${name}</b>?</span>
+      <button class="tbtn" style="background:#e74c3c;color:white;padding:4px 12px;font-size:11px;" onclick="removeStudent('${lvl}','${idx}')">Yes, Remove</button>
+      <button class="tbtn" style="background:#aaa;color:white;padding:4px 12px;font-size:11px;" onclick="hideConfirm('${lvl}','${idx}')">Cancel</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="stbl" style="min-width:${500+WEEKS.length*70}px;">
+        <thead><tr>
+          <th style="text-align:left;width:14%;">Skill Area</th>
+          ${WEEKS.map((w,wi)=>`<th class="week-th wth-${wi}" onclick="editWeek(${wi})" title="Click to rename">${w} <span style="font-size:9px;opacity:0.6;">✏️</span></th>`).join('')}
+          <th style="width:13%;">Comments</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="tnotes">
+      <div class="tnotes-lbl" style="color:${c};">📝 Teacher's Notes & Focus Areas</div>
+      <textarea class="tnotes-area" data-save="${nid}" oninput="qSave()" rows="3" style="border-color:${c}80;" placeholder="Write notes for this student..."></textarea>
+      <div class="no-print" style="margin-top:6px;"><button class="fixbtn" onclick="fixNoteGrammar(this,'${nid}')">✨ Fix Grammar</button></div>
+      <div id="trb-${nid}"></div>
+    </div>
+    <div class="feedback-section">
+      <div class="feedback-toolbar no-print">
+        <span class="feedback-label">🤖 AI Weekly Feedback</span>
+        <select class="week-select" id="fb-week-${lvl}-${idx}">${weekOpts}</select>
+        <button class="fbtn fbtn-gen" onclick="generateFeedback(this,'${lvl}','${idx}')">✨ Generate Feedback</button>
+        <span class="feedback-label" style="margin-left:8px;">📊 Compare:</span>
+        <select class="week-select" id="cmp-w1-${lvl}-${idx}">${weekOpts}</select>
+        <span style="font-size:11px;color:#555;">vs</span>
+        <select class="week-select" id="cmp-w2-${lvl}-${idx}">${WEEKS.map((w,i)=>`<option value="${i}"${i===1?' selected':''}>${w}</option>`).join('')}</select>
+        <button class="fbtn fbtn-compare" onclick="compareWeeks('${lvl}','${idx}')">📊 Compare</button>
+      </div>
+      <div class="feedback-box empty" id="fb-box-${lvl}-${idx}">No feedback generated yet. Select a week and click "Generate Feedback".</div>
+      <div class="compare-box" id="cmp-box-${lvl}-${idx}"></div>
+    </div>
+  </div>`;
+}
+
+function buildLevel(lvl){
+  const info=D[lvl];
+  const blocks=info.students.length?info.students.map((s,i)=>buildStudent(lvl,s,i,i)).join(''):`<div id="emp-${lvl}" style="padding:24px;color:#888;text-align:center;">No students yet. Click "+ Add Student" below.</div>`;
+  const lgItems=SCORES.map(s=>`<div class="legend-item"><span style="font-weight:700;color:#1a3a5c;">${s.min===s.max?s.min:s.min+'–'+s.max}</span><span style="color:#444;"> — ${s.en}</span><div class="legend-tr no-print" data-k="${s.en}"></div></div>`).join('');
+  return`
+  <div class="lsec ${lvl==='A1'?'active':''}" id="sec-${lvl}">
+    <div class="lhdr"><h2>${info.label}</h2><p>${info.sub} · ${info.students.length} student(s) · ${WEEKS.length} weeks</p></div>
+    <div class="card">
+      <div class="legend no-print"><div class="legend-title">📊 Score Guide</div><div class="legend-grid">${lgItems}</div></div>
+      <div id="stu-${lvl}">${blocks}</div>
+      <div class="cardfooter no-print">
+        <button class="btn-addst" onclick="addStudent('${lvl}')">+ Add Student</button>
+        <button class="btn-addsk" onclick="addSkill('${lvl}')">+ Add Skill Area</button>
+        <button class="btn-addweek" onclick="addMoreWeeks()">+ Add 10 More Weeks</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render(){document.getElementById('mc').innerHTML=Object.keys(D).map(buildLevel).join('');}
+function showLvl(lvl,btn){
+  document.querySelectorAll('.lsec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+lvl)?.classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+initD();
+sb.auth.getSession().then(({data:{session}})=>{if(session?.user)startApp(session.user);});
+</script>
+</body>
+</html>
